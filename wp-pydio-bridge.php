@@ -2,7 +2,7 @@
 /*
 Plugin Name: WP Pydio Bridge
 Plugin URI: http://pyd.io/
-Description: This plugin allow to associate directly Pydio users to wordpress ones (using WP as the master). Warning, it will not work until you open the "Settings > Pydio" panel (here on the left) to edit your Pydio installation path. Tested with WP 3.0.4 & Pydio 3.2.0
+Description: Associate Pydio and WordPress users directly using WP as the master user database
 Version: 2.0-beta
 Author: Charles du Jeu
 Author URI: http://pyd.io/
@@ -227,7 +227,7 @@ class WP_Pydio_Bridge {
 		add_settings_section(
 			'pydio_settings_creds',
 			__( 'Credentials', 'wp-pydio-bridge' ),
-			array( &$this, 'creds_section_text' ),
+			array( &$this, 'section_creds' ),
 			'pydio_settings'
 		);
 		
@@ -250,7 +250,7 @@ class WP_Pydio_Bridge {
 		add_settings_section(
 			'pydio_settings_options',
 			__( 'Options', 'wp-pydio-bridge' ),
-			array( &$this, 'options_section_text' ),
+			array( &$this, 'section_options' ),
 			'pydio_settings'
 		);
 		
@@ -265,7 +265,7 @@ class WP_Pydio_Bridge {
 		add_settings_section(
 			'pydio_settings_repo',
 			__( 'Creating Pydio Repositories', 'wp-pydio-bridge' ),
-			array( &$this, 'repo_section_text' ),
+			array( &$this, 'section_repo' ),
 			'pydio_settings'
 		);
 		
@@ -281,7 +281,7 @@ class WP_Pydio_Bridge {
 		
 	} // END guess_pydio_path()
 
-	public function creds_section_text() { ?>
+	public function section_creds() { ?>
 		
 		<p>
 			<?php _e( 'Set the data to connect to your Pydio installation', 'wp-pydio-bridge' ); ?>
@@ -290,7 +290,7 @@ class WP_Pydio_Bridge {
 	<?php
 	} // END install_section_text()
 	
-	public function options_section_text() { ?>
+	public function section_options() { ?>
 		
 		<p>
 			<?php _e( 'Define how WordPress and Pydio should interact', 'wp-pydio-bridge' ); ?>
@@ -299,7 +299,7 @@ class WP_Pydio_Bridge {
 	<?php
 	} // END options_section_text()
 
-	public function repo_section_text() {
+	public function section_repo() {
 		
 		$installPath = str_replace( "\\", "/", dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) );
 		?>
@@ -339,16 +339,16 @@ class WP_Pydio_Bridge {
 		$false = ( true != $value );
 		?>
 		<fieldset>
-			<label title="<?php _e( 'Yes' ); ?>">
+			<label title="<?php _e( 'Yes', 'wp-pydio-bridge' ); ?>">
 				<input type="radio" id="pydio_auto_create_true" value="true" name="pydio_settings[auto_create]" <?php checked( $true ); ?>>
-				<span><?php _e( 'Yes' ); ?></span>
+				<span><?php _e( 'Yes', 'wp-pydio-bridge' ); ?></span>
 			</label>
 			<br>
-			<label title="<?php _e( 'No' ); ?>">
+			<label title="<?php _e( 'No', 'wp-pydio-bridge' ); ?>">
 				<input type="radio" id="pydio_auto_create_false" value="false" name="pydio_settings[auto_create]" <?php checked( $false ); ?>>
-				<span><?php _e( 'No' ); ?></span>
+				<span><?php _e( 'No', 'wp-pydio-bridge' ); ?></span>
 			</label>
-			<p class="description"><?php _e( 'Create Ajxp users when they login', 'wp-pydio-bridge' ); ?></p>
+			<p class="description"><?php _e( 'Create Pydio users when they login', 'wp-pydio-bridge' ); ?></p>
 		</fieldset>
 		
 		<?php	
