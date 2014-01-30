@@ -3,7 +3,7 @@
 Plugin Name: WP Pydio Bridge
 Plugin URI: http://pyd.io/
 Description: Associate Pydio and WordPress users directly using WP as the master user database
-Version: 2.0-beta
+Version: 2.0-alpha
 Author: Charles du Jeu
 Author URI: http://pyd.io/
 Text Domain: wp-pydio-bridge

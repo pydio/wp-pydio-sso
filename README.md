@@ -1,3 +1,5 @@
+__ ALPHA version - DO NOT use in production __
+
 # WP Pydio Bridge
 
 [Homepage](http://pyd.io/cms-bridges/) |
@@ -16,7 +18,7 @@ Associate Pydio and WordPress users directly using WP as the master user databas
 ### Requirements
 
 - Pydio: >= 5
-- Wordpress: >= 3.?
+- Wordpress: >= 3.x
 
 ### Set up WordPress
 
