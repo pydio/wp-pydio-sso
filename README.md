@@ -3,14 +3,14 @@ __ ALPHA version - DO NOT use in production __
 # WP Pydio Bridge
 
 [Homepage](http://pyd.io/cms-bridges/) |
-[GitHub-Repository](#https://github.com/pydio/wp-pydio-bridge) |
-[Issue-Tracker](#https://github.com/pydio/wp-pydio-bridge/issues) |
+[GitHub-Repository](https://github.com/pydio/wp-pydio-bridge) |
+[Issue-Tracker](https://github.com/pydio/wp-pydio-bridge/issues) |
 
 Associate Pydio and WordPress users directly using WP as the master user database
 
 ## How to contribute
 
-- Report issues or feature requests here on the [issue tracker](#https://github.com/pydio/wp-pydio-bridge/issues)
+- Report issues or feature requests here on the [issue tracker](https://github.com/pydio/wp-pydio-bridge/issues)
 - Fork and send us your Pull Requests
 
 ## Installation

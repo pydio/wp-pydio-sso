@@ -1,7 +1,7 @@
 === WP Pydio Bridge ===
 Contributors: @todo, cfoellmann, wp-repository
 Tags: pydio, bridge, auth, authentication, registration, users, usermanagement
-Requires at least: @todo
+Requires at least: 3.1.0
 Tested up to: 3.9-alpha
 Stable tag: 2.0
 License: LGPLv2.1 or later
