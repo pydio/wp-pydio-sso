@@ -229,7 +229,7 @@ class WP_Pydio_SSO {
 			<h2><?php _e( 'Pydio SSO Settings', 'wp-pydio-sso' ); ?></h2>
 			<form action="options.php" method="post">
 			<?php
-				settings_fields( 'pydio_settings_nonce' );
+				settings_fields( 'pydio_settings' );
 				do_settings_sections( 'pydio_settings' );
 				submit_button();
 			?>
@@ -351,21 +351,21 @@ class WP_Pydio_SSO {
 	public function plugin_autocreate_string() {
 
 		$value = $this->options['auto_create'];
-		?>
-		<fieldset>
-			<label title="<?php _e( 'Yes', 'wp-pydio-sso' ); ?>">
-				<input type="radio" id="pydio_auto_create_true" value="1" name="pydio_settings[auto_create]" <?php checked( $value, true, false ); ?>/>
-				<span><?php _e( 'Yes', 'wp-pydio-sso' ); ?></span>
-			</label>
-			<br>
-			<label title="<?php _e( 'No', 'wp-pydio-sso' ); ?>">
-				<input type="radio" id="pydio_auto_create_false" value="0" name="pydio_settings[auto_create]" <?php checked( $value, true, false ); ?>/>
-				<span><?php _e( 'No', 'wp-pydio-sso' ); ?></span>
-			</label>
-			<p class="description"><?php _e( 'Create Pydio users when they login', 'wp-pydio-sso' ); ?></p>
-		</fieldset>
+		echo '' .
+		"<fieldset>" .
+			"<label title='" . __( 'Yes', 'wp-pydio-bridge' ) . "'>" .
+				"<input type='radio' id='pydio_auto_create_true' value='1' name='pydio_settings[auto_create]' " . checked( $value, true, false ) . "/>" .
+				"<span>" . __( 'Yes', 'wp-pydio-bridge' ) . "</span>" .
+			"</label>" .
+			"<br />" .
+			"<label title='" . __( 'No', 'wp-pydio-bridge' ) . "'>" .
+				"<input type='radio' id='pydio_auto_create_false' value='0' name='pydio_settings[auto_create]' " . checked( $value, false, false ) . "/>" .
+				"<span>" . __( 'No', 'wp-pydio-bridge' ) . "</span>" .
+			"</label>" .
+			"<br />" .
+			"<p class='description'>" . __( 'Create Pydio users when they login', 'wp-pydio-bridge' ) . "</p>" .
+		"</fieldset>";
 
-		<?php
 	} // END plugin_autocreate_string()
 
 	public function plugin_options_validate( $input ) {
@@ -378,9 +378,9 @@ class WP_Pydio_SSO {
 		if ( substr( $install, strlen( $install ) - 1 ) == "/" ) {
 			$newinput['install_path'] = substr( $install, 0, strlen( $install ) - 1 );
 		}
-		if ( !is_dir( $newinput['ajxp_install_path'] ) ) {
+		if ( ! is_dir( $newinput['install_path'] ) ) {
 			//TO FIX : that notice do not work
-			add_action('admin_notices', create_function('', 'echo \'<div id="message" class="error fade"><p><strong>' . sprintf( __( 'The directory %s do not exists', 'wp-pydio-sso' ), '<code>' . $newinput['install_path'] . '</code>') . '</strong></p></div>\';'));
+			add_action( 'admin_notices', create_function( '', 'echo \'<div id="message" class="error fade"><p><strong>' . sprintf( __( 'The directory %s does not exist', 'wp-pydio-sso' ), '<code>' . $newinput['install_path'] . '</code>' ) . '</strong></p></div>\';' ) );
 			$newinput['install_path'] = "";
 		}
 
