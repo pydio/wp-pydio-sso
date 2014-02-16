@@ -58,7 +58,7 @@ class WP_Pydio_SSO_Admin {
 
 		self::$instance = $this;
 
-		$this->options = WP_Pydio_SSO::get_instance()->options;
+		$this->options = get_option( 'pydio_settings' );
 
 		add_action( 'admin_init',	array( $this, 'admin_init' ) );
 		add_action( 'admin_menu',	array( $this, 'admin_menu' ) );

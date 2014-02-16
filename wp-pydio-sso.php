@@ -103,15 +103,9 @@ class WP_Pydio_SSO {
 		self::$instance = $this;
 
 		$this->options = get_option( 'pydio_settings' );
-		$this->glueCode = $this->options['install_path'] . '/plugins/auth.remote/glueCode.php';
-		$this->glueCode_found = @is_file( $this->glueCode );
 
-		// Authentication
-		add_action( 'wp_login',			array( $this, 'authenticate' ), 10, 2 );
-		add_action( 'wp_logout',		array( $this, 'logout' ), 1 );
-		add_action( 'user_register',	array( $this, 'createUser' ), 1, 1 );
-		add_action( 'set_user_role',	array( $this, 'updateUserRole' ), 1, 1 );
-		add_action( 'delete_user',		array( $this, 'deleteUser' ), 1, 1);
+		new WP_Pydio_SSO_Auth;
+		add_action( 'plugins_loaded',	array( $this, 'load_plugin_textdomain' ) );
 
 		if ( is_admin() ) {
 
@@ -124,8 +118,6 @@ class WP_Pydio_SSO {
 			add_action( 'admin_head',	array( $this, 'admin_head' ) );
 
 		}
-
-		add_action( 'plugins_loaded',	array( $this, 'load_plugin_textdomain' ) );
 
 		// Plugin Activation
 		register_activation_hook( __FILE__, array( 'WP_Pydio_SSO', 'activate_plugin' ) );
@@ -174,80 +166,6 @@ class WP_Pydio_SSO {
 		return $options;
 
 	} // END get_defaults()
-
-	public function set_glue_globals( $authenticate, $user = null, $bool = null ) {
-
-		if ( ! $this->glueCode_found ) {
-			return;
-		}
-
-		global $AJXP_GLUE_GLOBALS;
-
-		$AJXP_GLUE_GLOBALS = array();
-
-		switch ( $type ) {
-			case 'authenticate':
-				$AJXP_GLUE_GLOBALS['secret']			= $this->options['secret_key'];
-				$AJXP_GLUE_GLOBALS['autoCreate']		= $this->options['auto_create'];
-				$AJXP_GLUE_GLOBALS['plugInAction']		= 'login';
-				$AJXP_GLUE_GLOBALS['login']				= array(
-					'name'		=> $user,
-					'password'	=> $user->user_pass,
-					'roles'		=> $user->roles
-				);
-				break;
-			case 'logout':
-				$AJXP_GLUE_GLOBALS['secret'] 			= $this->options['secret_key'];
-				$AJXP_GLUE_GLOBALS['plugInAction']		= 'logout';
-				break;
-			case 'create_user':
-				$AJXP_GLUE_GLOBALS['user']				= array();
-				$AJXP_GLUE_GLOBALS['user']['name']		= $user->user_login;
-				$AJXP_GLUE_GLOBALS['user']['password']	= $user->user_pass;
-				$AJXP_GLUE_GLOBALS['user']['right']		= ( is_super_admin( $user->ID ) ? 'admin' : '' ); // @todo
-				$AJXP_GLUE_GLOBALS['user']['roles']		= $user->roles;
-				$AJXP_GLUE_GLOBALS['plugInAction']		= ( $bool ? 'addUser' : 'updateUser' );
-				break;
-			case 'delete_user':
-				$AJXP_GLUE_GLOBALS['secret']			= $this->options['secret_key'];
-				$AJXP_GLUE_GLOBALS['userName']			= $user->user_login;
-				$AJXP_GLUE_GLOBALS['plugInAction']		= "delUser";
-				break;
-		}
-
-		include( $this->glueCode );
-
-	} // END set_glue_globals()
-
-	public function authenticate( $username ) {
-
-		$this->set_glue_globals( 'authenticate', get_user_by( 'login', $username ) );
-
-	} // END authenticate()
-
-	public function logout() {
-
-		$this->set_glue_globals( 'logout' );
-
-	} // END logout()
-
-	public function update_user_role( $user_id ) {
-
-		$this->create_user( $user_id, false );
-
-	} // END update_user_role()
-
-	public function create_user( $user_id, $is_new = true ) {
-
-		$this->set_glue_globals( 'create_user', get_userdata( $user_id ), $is_new );
-
-	} // END create_user()
-
-	public function delete_user( $user_id ) {
-
-		$this->set_glue_globals( 'delete_user', get_userdata( $user_id ) );
-
-	} // END delete_user()
 
 	/**
 	 * Add a link to the admin bar to launch Pydio
