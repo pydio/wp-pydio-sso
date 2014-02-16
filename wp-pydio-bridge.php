@@ -81,7 +81,7 @@ class WP_Pydio_Bridge
 		
 		// Plugin Activation
 		register_activation_hook( __FILE__, array( 'WP_Pydio_Bridge', 'activate_plugin' ) );
-	}
+	} // END __construct()
 	
 	private function set_glue_globals( $authenticate, $user = null, $bool = null ) 
 	{
@@ -124,32 +124,32 @@ class WP_Pydio_Bridge
 		}
 
 		include( $this->glueCode );
-	}
+	} // END set_glue_globals()
 
 	public function authenticate( $username ) 
 	{
 		$this->set_glue_globals( 'authenticate', get_user_by( 'login', $username ) );
-	}
+	} // END authenticate()
 	
 	public function logout() 
 	{
 		$this->set_glue_globals( 'logout' );
-	}
+	} // END logout()
 
 	public function update_user_role( $user_id ) 
 	{
 		$this->create_user( $user_id, false );
-	}
+	} // END update_user_role()
 
 	public function create_user( $user_id, $is_new = true ) 
 	{
 		$this->set_glue_globals( 'create_user', get_userdata( $user_id ), $is_new );
-	}
+	} // END create_user()
 
 	public function delete_user( $user_id ) 
 	{
 		$this->set_glue_globals( 'delete_user', get_userdata( $user_id ) );
-	}
+	} // END delete_user()
 	
 	public function get_defaults() 
 	{
@@ -162,7 +162,7 @@ class WP_Pydio_Bridge
 		$options = apply_filters( 'wp_pydio_bridge_defaults', $defaults );
 		
 		return $options;
-	}
+	} // END get_defaults()
 	
 	/**
 	 * Add a link to the admin bar to launch Pydio
@@ -187,7 +187,7 @@ class WP_Pydio_Bridge
 				) );
 			}, 99 );
 		}
-	}
+	} // END admin_head()
 	
 	public function admin_menu() 
 	{
@@ -199,7 +199,7 @@ class WP_Pydio_Bridge
 			'wp-pydio-bridge',
 			array( &$this, 'options_page' )
 		);
-	}
+	} // END admin_menu()
 
 	public function options_page() 
 	{
@@ -216,7 +216,7 @@ class WP_Pydio_Bridge
 				$form_fields .
 			"</form>" .
 		"</div>";
-	}
+	} // END options_page()
 
 	public function admin_init() 
 	{
@@ -270,35 +270,34 @@ class WP_Pydio_Bridge
 			array( &$this, 'section_repo' ),
 			'pydio_settings'
 		);
-		
-	}
+	} // END admin_init()
 
 	public function guess_pydio_path() 
 	{
 		return dirname( ABSPATH ) . '/pydio';
-	}
+	} // END guess_pydio_path()
 
 	public function section_creds() 
 	{
 		echo "<p>" . __( 'Set the data to connect to your Pydio installation', 'wp-pydio-bridge' ) . "</p>";
-	}
+	} // END section_creds()
 	
 	public function plugin_setting_string() 
 	{
 		echo "<input id='plugin_text_string' name='pydio_settings[install_path]' size='70' type='text' value='{$this->options['install_path']}' />";
 		echo '<p class="description">' . sprintf( __( 'Installation path. Enter here the full path to your installation on the server, i.e. the root folder containing ajaxplorer index.php file. Do not include slash at the end. May look like %s', 'wp-pydio-bridge' ), '<code>' . $this->guess_pydio_path() . '</code>') . '</p>';
-	}
+	} // END plugin_setting_string()
 	
 	public function plugin_secret_string() 
 	{
     	echo "<input id='plugin_secret_string' name='pydio_settings[secret_key]' size='70' type='text' value='{$this->options['secret_key']}' />";
 		echo '<p class="description">' . __( "must be the same as the AUTH_DRIVER 'SECRET' option in your Pydio configuration", 'wp-pydio-bridge' ) . '</p>';
-	}
+	} // END plugin_secret_string()
 	
 	public function section_options() 
 	{
 		echo "<p>" . __( 'Define how WordPress and Pydio should interact', 'wp-pydio-bridge' ) . "</p>";
-	}
+	} // END section_options()
 	
 	public function plugin_autocreate_string() 
 	{
@@ -317,7 +316,7 @@ class WP_Pydio_Bridge
 			"<br />" .
 			"<p class='description'>" . __( 'Create Pydio users when they login', 'wp-pydio-bridge' ) . "</p>" .
 		"</fieldset>";
-	}
+	} // END plugin_autocreate_string()
 	
 	public function section_repo() 
 	{
@@ -332,7 +331,7 @@ class WP_Pydio_Bridge
 			"<li><code>{$uploads['basedir']}</code> : " . __( 'The media library', 'wp-pydio-bridge' ) . "</li>" .
 		"</ul>" .
 		"<p>" . __( 'Of course, repositories are not limited to these values, you can browse whatever part of you server', 'wp-pydio-bridge' ) . "</p>";
-	}
+	} // END section_repo()
 
 	public function plugin_options_validate( $input ) 
 	{
@@ -353,7 +352,7 @@ class WP_Pydio_Bridge
 		$newinput['auto_create'] = in_array( $input['auto_create'], array( '1', 1, 'true', true ) ) ? true : false;
 
 		return $newinput;
-	}
+	} // END plugin_options_validate()
 	
 	/**
 	 * Load the plugin's textdomain hooked to 'plugins_loaded'.
@@ -375,7 +374,7 @@ class WP_Pydio_Bridge
 			false,
 			dirname( plugin_basename( __FILE__ ) ) . '/languages/'
 		);
-	}
+	} // END load_plugin_textdomain()
 	
 	/**
 	 * Fired when plugin is activated
@@ -408,7 +407,7 @@ class WP_Pydio_Bridge
 		} else {
 			add_option( 'pydio_settings', $defaults );
 		}
-	}
+	} // END activate_plugin
 
 } // END class WP_Pydio_Bridge
 
