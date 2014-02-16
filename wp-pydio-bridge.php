@@ -75,6 +75,7 @@ class WP_Pydio_Bridge
 		
 		// Settings
 		add_action( 'admin_init', array( &$this, 'admin_init' ) );
+		add_action( 'admin_head', array( &$this, 'admin_head' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 		add_action( 'plugins_loaded', array( &$this, 'load_plugin_textdomain' ) );
 		
@@ -82,7 +83,7 @@ class WP_Pydio_Bridge
 		register_activation_hook( __FILE__, array( 'WP_Pydio_Bridge', 'activate_plugin' ) );
 	}
 	
-	public function set_glue_globals( $authenticate, $user = null, $bool = null ) 
+	private function set_glue_globals( $authenticate, $user = null, $bool = null ) 
 	{
 		if( ! $this->glueCode_found ) {
 			return;
@@ -161,6 +162,31 @@ class WP_Pydio_Bridge
 		$options = apply_filters( 'wp_pydio_bridge_defaults', $defaults );
 		
 		return $options;
+	}
+	
+	/**
+	 * Add a link to the admin bar to launch Pydio
+	 * 
+	 * @since	2.1
+	 * @return	void
+	 */
+
+	public function admin_head() 
+	{
+		if( ! empty( $this->options['install_path'] ) && current_user_can( apply_filters( 'wp_pydio_bridge_settings_cap', 'activate_plugins' ) ) ) {
+			
+			echo "<style type='text/css'>#wp-admin-bar-pydio > a:before{ content:'\\f322' }</style>";
+			
+			add_action( 'wp_before_admin_bar_render', function() {
+				global $wp_admin_bar;
+				$pydio_path = explode( $_SERVER['SERVER_NAME'], $this->options['install_path'] );
+				$wp_admin_bar->add_node( array(
+					'id' => 'pydio',
+					'title' => __( 'File Manager', 'wp-pydio-bridge' ),
+					'href' => "http://" . $_SERVER['SERVER_NAME'] . $pydio_path[1]
+				) );
+			}, 99 );
+		}
 	}
 	
 	public function admin_menu() 
