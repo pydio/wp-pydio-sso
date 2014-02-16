@@ -3,7 +3,7 @@
 Plugin Name: WP Pydio Bridge
 Plugin URI: http://pyd.io/
 Description: Associate Pydio and WordPress users directly using WP as the master user database
-Version: 2.1-alpha
+Version: 2.0-alpha
 Author: Charles du Jeu
 Author URI: http://pyd.io/
 Text Domain: wp-pydio-bridge
@@ -32,7 +32,7 @@ Domain Path: /languages
  * @copyright	Copyright (c) 2014, Charles du Jeu
  * @license		https://www.gnu.org/licenses/lgpl-2.1.html LGPLv2.1
  * @package		Pydio\WP_Pydio_Bridge
- * @version		2.1
+ * @version		2.0
  */
 
 // avoid direct calls to this file
