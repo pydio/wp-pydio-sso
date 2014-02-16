@@ -173,7 +173,7 @@ class WP_Pydio_Bridge
 
 	public function admin_head() 
 	{
-		if( ! empty( $this->options['install_path'] ) && current_user_can( apply_filters( 'wp_pydio_bridge_settings_cap', 'activate_plugins' ) ) ) {
+		if( ! empty( $this->options['install_path'] ) && current_user_can( apply_filters( 'wp_pydio_bridge_admin_bar_cap', 'activate_plugins' ) ) ) {
 			
 			echo "<style type='text/css'>#wp-admin-bar-pydio > a:before{ content:'\\f322' }</style>";
 			
