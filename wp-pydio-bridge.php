@@ -85,7 +85,7 @@ class WP_Pydio_Bridge
 	
 	private function set_glue_globals( $authenticate, $user = null, $bool = null ) 
 	{
-		if( ! $this->glueCode_found ) {
+		if ( ! $this->glueCode_found ) {
 			return;
 		}
 		
@@ -93,7 +93,7 @@ class WP_Pydio_Bridge
 		
 		$AJXP_GLUE_GLOBALS = array();
 		
-		switch( $type ) {
+		switch ( $type ) {
 			case 'authenticate':
 				$AJXP_GLUE_GLOBALS['secret']			= $this->options['secret_key'];
 				$AJXP_GLUE_GLOBALS['autoCreate']		= $this->options['auto_create'];
@@ -173,7 +173,7 @@ class WP_Pydio_Bridge
 
 	public function admin_head() 
 	{
-		if( ! empty( $this->options['install_path'] ) && current_user_can( apply_filters( 'wp_pydio_bridge_admin_bar_cap', 'activate_plugins' ) ) ) {
+		if ( ! empty( $this->options['install_path'] ) && current_user_can( apply_filters( 'wp_pydio_bridge_admin_bar_cap', 'activate_plugins' ) ) ) {
 			
 			echo "<style type='text/css'>#wp-admin-bar-pydio > a:before{ content:'\\f322' }</style>";
 			
@@ -183,7 +183,7 @@ class WP_Pydio_Bridge
 				$wp_admin_bar->add_node( array(
 					'id' => 'pydio',
 					'title' => __( 'File Manager', 'wp-pydio-bridge' ),
-					'href' => "http://" . $_SERVER['SERVER_NAME'] . $pydio_path[1]
+					'href' => "http://" . $_SERVER['SERVER_NAME'] . $pydio_path[ 1 ],
 				) );
 			}, 99 );
 		}
@@ -341,10 +341,10 @@ class WP_Pydio_Bridge
 		$newinput['secret_key']		= trim( $input['secret_key'] );
 		$install					= $newinput['install_path'];
 		
-		if( substr( $install, strlen( $install ) - 1 ) == "/" ) {
+		if ( substr( $install, strlen( $install ) - 1 ) == "/" ) {
 			$newinput['install_path'] = substr( $install, 0, strlen( $install ) - 1 );
 		}
-		if( ! is_dir( $newinput['install_path'] ) ) {
+		if ( ! is_dir( $newinput['install_path'] ) ) {
 			//TO FIX : that notice do not work
 			add_action( 'admin_notices', create_function( '', 'echo \'<div id="message" class="error fade"><p><strong>' . sprintf( __( 'The directory %s does not exist', 'wp-pydio-bridge' ), '<code>' . $newinput['install_path'] . '</code>' ) . '</strong></p></div>\';' ) );
 			$newinput['install_path'] = "";
@@ -393,20 +393,19 @@ class WP_Pydio_Bridge
 	{
 		$defaults = self::get_defaults();
 		
-		if( is_multisite() && ( true == $network_wide ) ) {
+		if ( is_multisite() && ( true == $network_wide ) ) {
 			
 			global $wpdb;
 			$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
 
-			if( $blogs ) {
-				foreach( $blogs as $blog ) {
+			if ( $blogs ) {
+				foreach ( $blogs as $blog ) {
 					switch_to_blog( $blog['blog_id'] );
 					add_option( 'pydio_settings', $defaults );
 				}
 				restore_current_blog();
 			}
-		}
-		else {
+		} else {
 			add_option( 'pydio_settings', $defaults );
 		}
 	}
