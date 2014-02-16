@@ -36,7 +36,7 @@ Domain Path: /languages
  */
 
 // avoid direct calls to this file
-defined( 'ABSPATH' ) or die();
+defined( 'ABSPATH' ) or die( 'Access not allowed' );
 
 define( 'AJXP_EXEC', true );
 
@@ -83,7 +83,7 @@ class WP_Pydio_Bridge
 		register_activation_hook( __FILE__, array( 'WP_Pydio_Bridge', 'activate_plugin' ) );
 	} // END __construct()
 	
-	private function set_glue_globals( $authenticate, $user = null, $bool = null ) 
+	public function set_glue_globals( $authenticate, $user = null, $bool = null ) 
 	{
 		if ( ! $this->glueCode_found ) {
 			return;
