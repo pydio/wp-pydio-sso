@@ -70,19 +70,29 @@ class WP_Pydio_SSO_Admin {
 
 		add_submenu_page(
 			'options-general.php',
-			__( 'Pydio SSO Settings', 'wp-pydio-sso' ),
-			__( 'Pydio SSO', 'wp-pydio-sso' ),
+			__( 'Pydio Settings', 'wp-pydio-sso' ),
+			__( 'Pydio', 'wp-pydio-sso' ),
 			apply_filters( 'wp_pydio_sso_settings_cap', 'activate_plugins' ), // @todo
-			'wp-pydio-sso',
+			'wp-pydio',
 			array( $this, 'options_page' )
 		);
 
 	} // END admin_menu()
 
+	/**
+	 * @todo generate tabs from array
+	 * 
+	 * @return void
+	 */
 	public function options_page() { ?>
 
 		<div class="wrap">
-			<h2><?php _e( 'Pydio SSO Settings', 'wp-pydio-sso' ); ?></h2>
+			<h2><?php _e( 'Pydio Settings', 'wp-pydio-sso' ); ?></h2>
+
+			<h3 class="nav-tab-wrapper">
+				<a class="nav-tab nav-tab-active" href="#"><?php _e( 'Single sign-on', 'wp-pydio-sso' ); ?></a>
+			</h3><!-- .nav-tab-wrapper -->
+
 			<form action="options.php" method="post">
 			<?php
 				settings_fields( 'pydio_settings' );
@@ -261,7 +271,7 @@ class WP_Pydio_SSO_Admin {
 
 		return array_merge(
 			array(
-				'settings' => '<a href="' . admin_url( 'options-general.php' ) . '">' . __( 'Settings' ) . '</a>'
+				'settings' => '<a href="' . add_query_arg( 'page', 'wp-pydio', admin_url( 'options-general.php' ) ) . '">' . __( 'Settings' ) . '</a>'
 			),
 			$links
 		);
