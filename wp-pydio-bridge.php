@@ -35,21 +35,17 @@ Domain Path: /languages
  * @version		2.1
  */
 
-//avoid direct calls to this file
+// avoid direct calls to this file
 defined( 'ABSPATH' ) or die();
 
 define( 'AJXP_EXEC', true );
 
-/**
- * Main class to run the plugin
- * 
- * @since	1.0.0
- */
-class WP_Pydio_Bridge {
+class WP_Pydio_Bridge 
+{
 	
 	public $options;
 	public $glueCode;
-	public $glueCodeFound;
+	public $glueCode_found;
 	
 	/**
 	 * Constructor. Hooks all interactions to initialize the class.
@@ -68,37 +64,27 @@ class WP_Pydio_Bridge {
 	{
 		$this->options = get_option( 'pydio_settings' );
 		$this->glueCode = $this->options['install_path'] . '/plugins/auth.remote/glueCode.php';
-		$this->glueCodeFound = @is_file( $this->glueCode );
-		$this->autoCreate = $this->options['auto_create'];
-
+		$this->glueCode_found = @is_file( $this->glueCode );
+		
+		// Authentication
 		add_action( 'wp_login', array( &$this, 'authenticate' ), 10, 2 );
-		add_action( 'wp_logout', array( &$this, 'logout' ), 1    );
-		add_action( 'user_register', array( &$this, 'createUser' ), 1, 1 );
-		add_action( 'set_user_role', array( &$this, 'updateUserRole' ), 1, 1 );
-		add_action( 'delete_user', array( &$this, 'deleteUser' ), 1, 1 );
+		add_action( 'wp_logout', array( &$this, 'logout' ), 1 );
+		add_action( 'user_register', array( &$this, 'create_user' ), 1, 1 );
+		add_action( 'set_user_role', array( &$this, 'update_user_role' ), 1, 1 );
+		add_action( 'delete_user', array( &$this, 'delete_user' ), 1, 1 );
+		
+		// Settings
 		add_action( 'admin_init', array( &$this, 'admin_init' ) );
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
 		add_action( 'plugins_loaded', array( &$this, 'load_plugin_textdomain' ) );
 		
+		// Plugin Activation
 		register_activation_hook( __FILE__, array( 'WP_Pydio_Bridge', 'activate_plugin' ) );
 	}
 	
-	public function get_defaults() 
+	public function set_glue_globals( $authenticate, $user = null, $bool = null ) 
 	{
-		$defaults = array(
-			'install_path'	=> '',
-			'secret_key'	=> '',
-			'auto_create'	=> true,
-		);
-		
-		$options = apply_filters( 'wp_pydio_bridge_defaults', $defaults );
-		
-		return $options;
-	}
-	
-	private function set_glue_globals( $authenticate, $user = null, $bool = null ) 
-	{
-		if( ! $this->glueCodeFound ) {
+		if( ! $this->glueCode_found ) {
 			return;
 		}
 		
@@ -121,7 +107,7 @@ class WP_Pydio_Bridge {
 				$AJXP_GLUE_GLOBALS['secret'] 			= $this->options['secret_key'];
 				$AJXP_GLUE_GLOBALS['plugInAction']		= 'logout';
 				break;
-			case 'createUser':
+			case 'create_user':
 				$AJXP_GLUE_GLOBALS['user']				= array();
 				$AJXP_GLUE_GLOBALS['user']['name']		= $user->user_login;
 				$AJXP_GLUE_GLOBALS['user']['password']	= $user->user_pass;
@@ -129,7 +115,7 @@ class WP_Pydio_Bridge {
 				$AJXP_GLUE_GLOBALS['user']['roles']		= $user->roles;
 				$AJXP_GLUE_GLOBALS['plugInAction']		= ( $bool ? 'addUser' : 'updateUser' );
 				break;
-			case 'deleteUser':
+			case 'delete_user':
 				$AJXP_GLUE_GLOBALS['secret']			= $this->options['secret_key'];
 				$AJXP_GLUE_GLOBALS['userName']			= $user->user_login;
 				$AJXP_GLUE_GLOBALS['plugInAction']		= "delUser";
@@ -149,21 +135,34 @@ class WP_Pydio_Bridge {
 		$this->set_glue_globals( 'logout' );
 	}
 
-	public function updateUserRole( $user_id ) 
+	public function update_user_role( $user_id ) 
 	{
-		$this->createUser( $user_id, false );
+		$this->create_user( $user_id, false );
 	}
 
-	public function createUser( $user_id, $is_new = true ) 
+	public function create_user( $user_id, $is_new = true ) 
 	{
-		$this->set_glue_globals( 'createUser', get_userdata( $user_id ), $is_new );
+		$this->set_glue_globals( 'create_user', get_userdata( $user_id ), $is_new );
 	}
 
-	public function deleteUser( $user_id ) 
+	public function delete_user( $user_id ) 
 	{
-		$this->set_glue_globals( 'deleteUser', get_userdata( $user_id ) );
+		$this->set_glue_globals( 'delete_user', get_userdata( $user_id ) );
 	}
-
+	
+	public function get_defaults() 
+	{
+		$defaults = array(
+			'install_path'	=> '',
+			'secret_key'	=> '2iNmstt6J*BqvNa',
+			'auto_create'	=> true,
+		);
+		
+		$options = apply_filters( 'wp_pydio_bridge_defaults', $defaults );
+		
+		return $options;
+	}
+	
 	public function admin_menu() 
 	{
 		add_submenu_page(
@@ -179,15 +178,15 @@ class WP_Pydio_Bridge {
 	public function options_page() 
 	{
 		ob_start();
-			settings_fields( 'pydio_settings_nonce' );
+			settings_fields( 'pydio_settings' );
 			do_settings_sections( 'pydio_settings' );
 			submit_button();
 		$form_fields = ob_get_clean();
 		
-		$form = '' .
+		echo '' .
 		"<div class='wrap'>" .
 			"<h2>" . __( 'Pydio Bridge Settings', 'wp-pydio-bridge' ) . "</h2>" .
-			"<form action='' method='post'>" .
+			"<form action='options.php' method='post'>" .
 				$form_fields .
 			"</form>" .
 		"</div>";
@@ -258,58 +257,55 @@ class WP_Pydio_Bridge {
 		echo "<p>" . __( 'Set the data to connect to your Pydio installation', 'wp-pydio-bridge' ) . "</p>";
 	}
 	
+	public function plugin_setting_string() 
+	{
+		echo "<input id='plugin_text_string' name='pydio_settings[install_path]' size='70' type='text' value='{$this->options['install_path']}' />";
+		echo '<p class="description">' . sprintf( __( 'Installation path. Enter here the full path to your installation on the server, i.e. the root folder containing ajaxplorer index.php file. Do not include slash at the end. May look like %s', 'wp-pydio-bridge' ), '<code>' . $this->guess_pydio_path() . '</code>') . '</p>';
+	}
+	
+	public function plugin_secret_string() 
+	{
+    	echo "<input id='plugin_secret_string' name='pydio_settings[secret_key]' size='70' type='text' value='{$this->options['secret_key']}' />";
+		echo '<p class="description">' . __( "must be the same as the AUTH_DRIVER 'SECRET' option in your Pydio configuration", 'wp-pydio-bridge' ) . '</p>';
+	}
+	
 	public function section_options() 
 	{
 		echo "<p>" . __( 'Define how WordPress and Pydio should interact', 'wp-pydio-bridge' ) . "</p>";
-	}
-
-	public function section_repo() 
-	{
-		$installPath = str_replace( "\\", "/", dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) );
-		echo '' .
-		"<p>" . __( "Now that your Wordpress users can access Pydio, you have to create repositories in Pydio and let them access it. This is not automated at the moment, so you have to log in as 'admin' and create them manually from within Pydio. Set the repositories default rights at least at 'r' (read), so that the users can indeed access the repositories.", 'wp-pydio-bridge' ) . "</p>" .
-		"<p>" . 
-			__( 'Repository creation will ask you to enter the path to your repository. Here are some wordpress-related paths you may want to explore using Pydio:', 'wp-pydio-bridge' ) . 
-			"<ul>" .
-				"<li><code>.{$installPath}/wp-content/themes</code> : " . __( 'The wordpress themes contents', 'wp-pydio-bridge' ) . "<li>" .
-				"<li><code>.{$installPath}/wp-content/plugins</code> : " . __( 'The wordpress plugins', 'wp-pydio-bridge' ) . "<li>" .
-				"<li><code>.{$installPath}/" . get_option( 'upload_path' ) . "</code> : " . __( 'The media library', 'wp-pydio-bridge' ) . "<li>" .
-			"</ul>" .
-			__( 'Of course, repositories are not limited to these values, you can browse whatever part of you server', 'wp-pydio-bridge' ) .
-		"</p>";
-	}
-
-	public function plugin_setting_string() 
-	{
-		echo '<input id="plugin_text_string" name="wp_ajxp_options[ajxp_install_path]" size="70" type="text" value="' . $this->options['install_path'] . '" />';
-		echo '<p class="description">' . sprintf( __( 'Installation path. Enter here the full path to your installation on the server, i.e. the root folder containing ajaxplorer index.php file. Do not include slash at the end. May look like %s', 'wp-pydio-bridge' ), '<code>' . $this->guess_pydio_path() . '</code>') . '</p>';
-	}
-
-	public function plugin_secret_string() 
-	{
-		echo '<input id="plugin_secret_string" name="wp_ajxp_options[ajxp_secret_key]" size="70" type="text" value="' . $this->options['secret_key'] . '" />';
-		echo '<p class="description">' . __( "must be the same as the AUTH_DRIVER 'SECRET' option in your Pydio configuration", 'wp-pydio-bridge' ) . '</p>';
 	}
 	
 	public function plugin_autocreate_string() 
 	{
 		$value = $this->options['auto_create'];
-		$true = ( true == $value );
-		$false = ( true != $value );
-		
 		echo '' .
 		"<fieldset>" .
 			"<label title='" . __( 'Yes', 'wp-pydio-bridge' ) . "'>" .
-				"<input type='radio' id='pydio_auto_create_true' value='true' name='pydio_settings[auto_create]' " . checked( $true, true, false ) . "/>" .
+				"<input type='radio' id='pydio_auto_create_true' value='1' name='pydio_settings[auto_create]' " . checked( $value, true, false ) . "/>" .
 				"<span>" . __( 'Yes', 'wp-pydio-bridge' ) . "</span>" .
 			"</label>" .
 			"<br />" .
 			"<label title='" . __( 'No', 'wp-pydio-bridge' ) . "'>" .
-				"<input type='radio' id='pydio_auto_create_false' value='false' name='pydio_settings[auto_create]' " . checked( $false, true, false ) . "/>" .
+				"<input type='radio' id='pydio_auto_create_false' value='0' name='pydio_settings[auto_create]' " . checked( $value, false, false ) . "/>" .
 				"<span>" . __( 'No', 'wp-pydio-bridge' ) . "</span>" .
 			"</label>" .
+			"<br />" .
 			"<p class='description'>" . __( 'Create Pydio users when they login', 'wp-pydio-bridge' ) . "</p>" .
 		"</fieldset>";
+	}
+	
+	public function section_repo() 
+	{
+		$uploads = wp_upload_dir();
+		$plugins = untrailingslashit( trailingslashit( str_replace( plugin_basename( __DIR__ ), '', plugin_dir_path( __FILE__ ) ) ) );
+		echo '' .
+		"<p>" . __( "Now that your Wordpress users can access Pydio, you have to create repositories in Pydio and let them access it. This is not automated at the moment, so you have to log in as 'admin' and create them manually from within Pydio. Set the repositories default rights at least at 'r' (read), so that the users can indeed access the repositories.", 'wp-pydio-bridge' ) . "</p>" .
+		"<p>" . __( 'Repository creation will ask you to enter the path to your repository. Here are some wordpress-related paths you may want to explore using Pydio:', 'wp-pydio-bridge' ) . "</p>" .
+		"<ul>" .
+			"<li><code>" . get_theme_root() . "</code> : " . __( 'The wordpress themes', 'wp-pydio-bridge' ) . "</li>" .
+			"<li><code>{$plugins}</code> : " . __( 'The wordpress plugins', 'wp-pydio-bridge' ) . "</li>" .
+			"<li><code>{$uploads['basedir']}</code> : " . __( 'The media library', 'wp-pydio-bridge' ) . "</li>" .
+		"</ul>" .
+		"<p>" . __( 'Of course, repositories are not limited to these values, you can browse whatever part of you server', 'wp-pydio-bridge' ) . "</p>";
 	}
 
 	public function plugin_options_validate( $input ) 
@@ -322,13 +318,13 @@ class WP_Pydio_Bridge {
 		if( substr( $install, strlen( $install ) - 1 ) == "/" ) {
 			$newinput['install_path'] = substr( $install, 0, strlen( $install ) - 1 );
 		}
-		if( ! is_dir( $newinput['ajxp_install_path'] ) ) {
+		if( ! is_dir( $newinput['install_path'] ) ) {
 			//TO FIX : that notice do not work
 			add_action( 'admin_notices', create_function( '', 'echo \'<div id="message" class="error fade"><p><strong>' . sprintf( __( 'The directory %s does not exist', 'wp-pydio-bridge' ), '<code>' . $newinput['install_path'] . '</code>' ) . '</strong></p></div>\';' ) );
 			$newinput['install_path'] = "";
 		}
 
-		$newinput['auto_create'] = $input['auto_create'];
+		$newinput['auto_create'] = in_array( $input['auto_create'], array( '1', 1, 'true', true ) ) ? true : false;
 
 		return $newinput;
 	}
