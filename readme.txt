@@ -1,6 +1,6 @@
 === WP Pydio SSO ===
-Contributors: @todo, cfoellmann, wp-repository
-Tags: pydio, bridge, auth, authentication, registration, users, usermanagement, sso, single-signon
+Contributors: cfoellmann, cdujeu
+Tags: pydio, publish
 Requires at least: 3.1.0
 Tested up to: 3.9-alpha
 License: LGPLv2.1 or later
