@@ -105,17 +105,13 @@ class WP_Pydio_SSO {
 		$this->options = get_option( 'pydio_settings' );
 
 		new WP_Pydio_SSO_Auth;
-		add_action( 'plugins_loaded',	array( $this, 'load_plugin_textdomain' ) );
+
+		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
+		add_action( 'admin_head', array( $this, 'admin_head' ) );
 
 		if ( is_admin() ) {
 
 			new WP_Pydio_SSO_Admin();
-
-		}
-
-		if ( is_admin_bar_showing() ) {
-
-			add_action( 'admin_head',	array( $this, 'admin_head' ) );
 
 		}
 
@@ -175,7 +171,7 @@ class WP_Pydio_SSO {
 	 */
 	public function admin_head() {
 
-		if ( ! empty( $this->options['install_path'] ) && current_user_can( apply_filters( 'wp_pydio_bridge_admin_bar_cap', 'activate_plugins' ) ) ) {
+		if ( ! empty( $this->options['install_path'] ) && is_admin_bar_showing() && current_user_can( apply_filters( 'wp_pydio_bridge_admin_bar_cap', 'activate_plugins' ) ) ) {
 
 			echo "<style type='text/css'>#wp-admin-bar-pydio > a:before{ content:'\\f322' }</style>";
 

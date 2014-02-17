@@ -62,6 +62,12 @@ class WP_Pydio_SSO_Auth {
 
 		$this->glueCode = $this->options['install_path'] . '/plugins/auth.remote/glueCode.php';
 		$this->glueCode_found = @is_file( $this->glueCode );
+		
+		add_action( 'set_auth_cookie',	array( $this, 'authenticate' ), 10, 5 );
+		add_action( 'wp_logout',		array( $this, 'logout' ), 1 );
+		add_action( 'user_register',	array( $this, 'create_user' ), 1 );
+		add_action( 'set_user_role',	array( $this, 'update_user_role' ), 1 );
+		add_action( 'delete_user',		array( $this, 'delete_user' ), 1);
 
 	} // END __construct()
 
@@ -81,7 +87,7 @@ class WP_Pydio_SSO_Auth {
 				$AJXP_GLUE_GLOBALS['autoCreate']		= $this->options['auto_create'];
 				$AJXP_GLUE_GLOBALS['plugInAction']		= 'login';
 				$AJXP_GLUE_GLOBALS['login']				= array(
-					'name'		=> $user,
+					'name'		=> $user->user_login,
 					'password'	=> $user->user_pass,
 					'roles'		=> $user->roles
 				);
@@ -109,9 +115,9 @@ class WP_Pydio_SSO_Auth {
 
 	} // END set_glue_globals()
 
-	public function authenticate( $username ) {
+	public function authenticate( $auth_cookie, $expire, $expiration, $user_id ) {
 
-		$this->set_glue_globals( 'authenticate', get_user_by( 'login', $username ) );
+		$this->set_glue_globals( 'authenticate', get_user_by( 'id', $user_id ) );
 
 	} // END authenticate()
 
