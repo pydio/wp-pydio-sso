@@ -83,7 +83,7 @@ class WP_Pydio_Bridge
 		register_activation_hook( __FILE__, array( 'WP_Pydio_Bridge', 'activate_plugin' ) );
 	} // END __construct()
 	
-	public function set_glue_globals( $authenticate, $user = null, $bool = null ) 
+	public function set_glue_globals( $type, $user = null, $bool = null ) 
 	{
 		if ( ! $this->glueCode_found ) {
 			return;
@@ -99,7 +99,7 @@ class WP_Pydio_Bridge
 				$AJXP_GLUE_GLOBALS['autoCreate']		= $this->options['auto_create'];
 				$AJXP_GLUE_GLOBALS['plugInAction']		= 'login';
 				$AJXP_GLUE_GLOBALS['login']				= array(
-					'name'		=> $user,
+					'name'		=> $user->user_login,
 					'password'	=> $user->user_pass,
 					'roles'		=> $user->roles
 				);
