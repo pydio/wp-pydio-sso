@@ -37,3 +37,7 @@ Associate Pydio and WordPress users directly using WP as the master user databas
 ```
  !! Warning, if you use "$" in your secret key (on the wordpress side), add a \ symbol before it in the configuration. To be on the safe side just avoid using the "$" sign in your secret key.
 ```
+
+## Contributing
+
+Please <a href="http://pyd.io/contribute/cla">sign the Contributor License Agreement</a> before contributing.
